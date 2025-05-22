@@ -7,9 +7,7 @@ import { format, FormatOptionsWithLanguage } from 'sql-formatter';
 // 默认的格式化配置
 const defaultConfig: FormatOptionsWithLanguage = {
     language: 'sql',
-    // uppercase: true,
     linesBetweenQueries: 2,
-    // keywordCase: 'upper',
     indentStyle: 'standard'
 };
 
@@ -22,7 +20,20 @@ function applyCustomFormatting(text: string): string {
     // 例如：确保 SELECT 关键字后的字段在同一行
     text = text.replace(/SELECT\s+([^,\n]+)(,)/gi, 'SELECT $1$2');
     
-    return text;
+    // 确保所有缩进都是4个空格
+    const lines = text.split('\n');
+    const formattedLines = lines.map(line => {
+        // 计算当前行的缩进空格数
+        const leadingSpaces = line.match(/^\s*/)?.[0].length || 0;
+        // 将缩进转换为4的倍数
+        const indentLevel = Math.ceil(leadingSpaces / 4);
+        // 生成新的缩进
+        const newIndent = '    '.repeat(indentLevel);
+        // 替换原有缩进
+        return newIndent + line.trimLeft();
+    });
+    
+    return formattedLines.join('\n');
 }
 
 // 获取用户自定义配置
@@ -30,9 +41,7 @@ function getConfig(): FormatOptionsWithLanguage {
     const config = vscode.workspace.getConfiguration('sqlFormatter');
     return {
         ...defaultConfig,
-        // uppercase: config.get('uppercase') ?? defaultConfig.uppercase,
         linesBetweenQueries: config.get('linesBetweenQueries') || defaultConfig.linesBetweenQueries,
-        keywordCase: config.get('keywordCase') || defaultConfig.keywordCase,
         indentStyle: config.get('indentStyle') || defaultConfig.indentStyle
     };
 }
@@ -42,6 +51,7 @@ function formatSql(text: string, config: FormatOptionsWithLanguage): string {
     try {
         // 首先使用 sql-formatter 进行基本格式化
         let formattedText = format(text, config);
+        
         // 然后应用自定义格式化规则
         formattedText = applyCustomFormatting(formattedText);
         
