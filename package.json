@@ -1,0 +1,75 @@
+{
+  "name": "sqlformatter",
+  "displayName": "SQLFormatter",
+  "description": "SQL code formatter with customizable rules",
+  "version": "0.0.1",
+  "engines": {
+      "vscode": "^1.92.6"
+  },
+  "categories": [
+      "Formatters"
+  ],
+  "activationEvents": [
+      "onLanguage:sql"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+      "commands": [
+          {
+              "command": "sqlformatter.format",
+              "title": "Yuiko Format SQL"
+          }
+      ],
+      "configuration": {
+          "title": "SQL Formatter",
+          "properties": {
+              "sqlFormatter.uppercase": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Convert keywords to uppercase"
+              },
+              "sqlFormatter.linesBetweenQueries": {
+                  "type": "number",
+                  "default": 2,
+                  "description": "Number of empty lines between queries"
+              },
+              "sqlFormatter.keywordCase": {
+                  "type": "string",
+                  "enum": ["upper", "lower"],
+                  "default": "upper",
+                  "description": "Case of SQL keywords"
+              },
+              "sqlFormatter.indentStyle": {
+                  "type": "string",
+                  "enum": ["standard", "tabular"],
+                  "default": "standard",
+                  "description": "Indentation style"
+              },
+              "sqlFormatter.formatOnSave": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Format SQL on save"
+              }
+          }
+      }
+  },
+  "scripts": {
+      "vscode:prepublish": "npm run compile",
+      "compile": "tsc -p ./",
+      "watch": "tsc -watch -p ./",
+      "pretest": "npm run compile && npm run lint",
+      "lint": "eslint src --ext ts",
+      "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+      "@types/vscode": "^1.60.0",
+      "@types/node": "^16.11.7",
+      "@typescript-eslint/eslint-plugin": "^5.30.0",
+      "@typescript-eslint/parser": "^5.30.0",
+      "eslint": "^8.13.0",
+      "typescript": "^4.7.2"
+  },
+  "dependencies": {
+      "sql-formatter": "^2.3.3"
+  }
+}
