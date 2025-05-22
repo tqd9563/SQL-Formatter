@@ -9,9 +9,21 @@ const defaultConfig: FormatOptionsWithLanguage = {
     language: 'sql',
     // uppercase: true,
     linesBetweenQueries: 2,
-    keywordCase: 'upper',
+    // keywordCase: 'upper',
     indentStyle: 'standard'
 };
+
+// 自定义格式化规则
+function applyCustomFormatting(text: string): string {
+    // 处理 WITH 子句，确保 WITH 和表名在同一行
+    text = text.replace(/WITH\s+([a-zA-Z0-9_]+)\s+AS\s*\(/gi, 'WITH $1 AS (');
+    
+    // 处理其他自定义规则
+    // 例如：确保 SELECT 关键字后的字段在同一行
+    text = text.replace(/SELECT\s+([^,\n]+)(,)/gi, 'SELECT $1$2');
+    
+    return text;
+}
 
 // 获取用户自定义配置
 function getConfig(): FormatOptionsWithLanguage {
@@ -28,7 +40,12 @@ function getConfig(): FormatOptionsWithLanguage {
 // 格式化SQL代码
 function formatSql(text: string, config: FormatOptionsWithLanguage): string {
     try {
-        return format(text, config);
+        // 首先使用 sql-formatter 进行基本格式化
+        let formattedText = format(text, config);
+        // 然后应用自定义格式化规则
+        formattedText = applyCustomFormatting(formattedText);
+        
+        return formattedText;
     } catch (error) {
         vscode.window.showErrorMessage(`SQL格式化错误: ${error}`);
         return text;
