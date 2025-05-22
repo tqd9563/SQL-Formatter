@@ -13,15 +13,23 @@ const defaultConfig: FormatOptionsWithLanguage = {
 
 // 自定义格式化规则
 function applyCustomFormatting(text: string): string {
-    // 处理 WITH 子句，确保 WITH 和表名在同一行
+    // 处理 WITH 子句，确保 WITH 和表名在同一行，并且所有表名对齐
     text = text.replace(/WITH\s+([a-zA-Z0-9_]+)\s+AS\s*\(/gi, 'WITH $1 AS (');
     
     // 处理 SELECT 语句，确保 SELECT 后有两个空格
     text = text.replace(/SELECT\s+([^,\n]+)(,)/gi, 'SELECT  $1$2');
     
+    // 处理 WITH 子句的右括号，确保顶格
+    text = text.replace(/^\s*\)\s*,\s*([a-zA-Z0-9_]+)\s+AS\s*\(/gim, '),\n$1 AS (');
+    
     // 确保所有缩进都是4个空格
     const lines = text.split('\n');
     const formattedLines = lines.map(line => {
+        // 如果是 WITH 子句的右括号，保持顶格
+        if (line.trim() === ')') {
+            return line.trim();
+        }
+        
         // 计算当前行的缩进空格数
         const leadingSpaces = line.match(/^\s*/)?.[0].length || 0;
         // 将缩进转换为4的倍数
