@@ -16,9 +16,8 @@ function applyCustomFormatting(text: string): string {
     // 处理 WITH 子句，确保 WITH 和表名在同一行
     text = text.replace(/WITH\s+([a-zA-Z0-9_]+)\s+AS\s*\(/gi, 'WITH $1 AS (');
     
-    // 处理其他自定义规则
-    // 例如：确保 SELECT 关键字后的字段在同一行
-    text = text.replace(/SELECT\s+([^,\n]+)(,)/gi, 'SELECT $1$2');
+    // 处理 SELECT 语句，确保 SELECT 后有两个空格
+    text = text.replace(/SELECT\s+([^,\n]+)(,)/gi, 'SELECT  $1$2');
     
     // 确保所有缩进都是4个空格
     const lines = text.split('\n');
